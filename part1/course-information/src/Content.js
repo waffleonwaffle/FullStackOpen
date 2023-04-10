@@ -1,9 +1,9 @@
 import Part from "./Part"
-const Content = ({parts}) => {
+const Content = ({course}) => {
 
     return (
         <section>
-            {parts.map((part) => {
+            {course.parts.map((part) => {
                 return <Part part={part}/>
             })}
             
