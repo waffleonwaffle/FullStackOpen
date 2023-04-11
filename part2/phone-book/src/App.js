@@ -14,14 +14,20 @@ const App = () => {
   const [newName, setNewName] = useState('')
 
   const handleAddPerson = (event) => {
+
     event.preventDefault()
+    console.log(newName)
+    if(persons.some(person => person.name === newName)) {
+      alert(`${newName} is already added to the phonebook`)
+      setNewName('')
+      return
+    }
     const newNameObject = {
       name: newName,
       id: uniqid()
     }
     setPersons(persons.concat(newNameObject))
     setNewName('')
-    console.log(newName)
 
   }
   const handleNameChange = (event) => {
