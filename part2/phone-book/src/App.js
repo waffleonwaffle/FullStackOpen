@@ -1,9 +1,32 @@
 import { useState } from 'react'
 import uniqid from 'uniqid';
-const Person = ({ person }) => {
+const Persons = ({ filterPersons }) => {
+  return (
+    filterPersons.map(person => <div key={person.id}>{person.name} {person.number}</div>)
+  )
+}
+const PersonForm = ({ handleAddPerson, handleNameChange, handleNumberChange, newName, newNumber }) => {
+  return (
+    <form onSubmit={handleAddPerson}>
+      <div>
+        name: <input value={newName} onChange={handleNameChange} />
+      </div>
+      <div>
+        number: <input value={newNumber} onChange={handleNumberChange} />
+      </div>
+      <div>
+        <button type="submit" >add</button>
+      </div>
+    </form>
+
+  )
+}
+
+
+const Filter = ({ filterWords, handleFilterChange }) => {
   return (
     <div>
-      {person.name} {person.number}
+      filter shown with: <input value={filterWords} onChange={handleFilterChange} />
     </div>
   )
 }
@@ -32,7 +55,7 @@ const App = () => {
       id: uniqid()
     }
     setPersons(persons.concat(newPerson))
-    
+
   }
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -48,23 +71,12 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <div>
-          filter shown with: <input value={filterWords} onChange={handleFilterChange}/>
-      </div>
-      <form onSubmit={handleAddPerson}>
-        <h2>add a new</h2>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange} />
-        </div>
-        <div>
-          <button type="submit" >add</button>
-        </div>
-      </form>
+      <Filter filterWords={filterWords} handleFilterChange={handleFilterChange} />
+      <h2>add a new</h2>
+      <PersonForm handleAddPerson={handleAddPerson} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange}
+        newName={newName} newNumber={newNumber} />
       <h2>Numbers</h2>
-      {filterPersons.map(person => <Person key={person.id} person={person} />)}
+      <Persons filterPersons={filterPersons} />
     </div>
   )
 }
