@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 const StatisticLine = ({ text, value }) => {
   return (
-    <p>{text} {value}</p>
+    <td>{text} {value}</td>
   )
 }
 const Button = ({ buttonText, onClick }) => {
@@ -11,17 +11,31 @@ const Button = ({ buttonText, onClick }) => {
   )
 }
 
-const Statistics = ({ good, neutral, bad, all}) => {
+const Statistics = ({ good, neutral, bad, all }) => {
   if (all !== 0) {
     return (
-      <div>
-        <StatisticLine text={'good'} value={good}/>
-        <StatisticLine text={'neutral'} value={neutral}/>
-        <StatisticLine text={'bad'} value={bad}/>
-        <StatisticLine text={'all'} value={all}/>
-        <StatisticLine text={'average'} value={(good + bad * -1) / all}/>
-        <StatisticLine text={'positive'} value={(good / all) * 100}/>
-      </div>
+      <table>
+        <tbody>
+          <tr>
+            <StatisticLine text={'good'} value={good} />
+          </tr>
+          <tr>
+            <StatisticLine text={'neutral'} value={neutral} />
+          </tr>
+          <tr>
+            <StatisticLine text={'bad'} value={bad} />
+          </tr>
+          <tr>
+            <StatisticLine text={'all'} value={all} />
+          </tr>
+          <tr>
+            <StatisticLine text={'average'} value={((good + bad * -1) / all).toFixed(2)} />
+          </tr>
+          <tr>
+            <StatisticLine text={'positive'} value={`${((good / all) * 100).toFixed(2)}%`} />
+          </tr>
+        </tbody>
+      </table>
     )
   } else {
     return (
