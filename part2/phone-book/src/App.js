@@ -1,7 +1,17 @@
 import { useEffect, useState } from 'react'
 import uniqid from 'uniqid';
 import personService from './services/persons';
+const Notification = ({ notification }) => {
+  if (notification === null) {
+    return null
+  }
 
+  return (
+    <div className='error'>
+      {notification}
+    </div>
+  )
+}
 const Person = ({person, handleDeletePerson}) => {
 
   return (
@@ -41,11 +51,14 @@ const Filter = ({ filterWords, handleFilterChange }) => {
     </div>
   )
 }
+
+
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterWords, setFilterWords] = useState('')
+  const [notification, setNotification] = useState(null)
   const filterPersons = persons.filter(person => person.name.includes(filterWords))
   useEffect(() => {
     personService
@@ -72,6 +85,8 @@ const App = () => {
     personService.updatePerson(id, changedPerson).then((updatePerson) => {
       setPersons(persons.map(person => person.id !== id ? person : updatePerson))
     })
+
+  
   }
   const handleAddPerson = (event) => {
     event.preventDefault()
@@ -83,6 +98,7 @@ const App = () => {
       if(toUpdate) {
         const changedPerson = {...personToUpdate, number: newNumber}
         handleUpdatePerson(personToUpdate.id, changedPerson)
+        showNotification(`Updated ${newName}`)
       }
       return
     }
@@ -93,8 +109,9 @@ const App = () => {
     }
     personService.createPerson(newPerson).then(returnedData => {
       setPersons(persons.concat(returnedData))
+      showNotification(`Added ${newName}`)
     })
-
+   
   }
   const handleNameChange = (event) => {
     setNewName(event.target.value)
@@ -107,9 +124,17 @@ const App = () => {
   const handleFilterChange = (event) => {
     setFilterWords(event.target.value)
   }
+
+  const showNotification = (message) => {
+    setNotification(message)
+    setTimeout(() => {
+      setNotification(null)
+    }, 5000)
+  }
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification notification={notification}/>
       <Filter filterWords={filterWords} handleFilterChange={handleFilterChange} />
       <h2>add a new</h2>
       <PersonForm handleAddPerson={handleAddPerson} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange}
