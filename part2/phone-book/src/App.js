@@ -37,7 +37,6 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filterWords, setFilterWords] = useState('')
   const filterPersons = persons.filter(person => person.name.includes(filterWords))
-
   useEffect(() => {
     axios
       .get('http://localhost:3001/persons')
@@ -58,7 +57,9 @@ const App = () => {
       number: newNumber,
       id: uniqid()
     }
-    setPersons(persons.concat(newPerson))
+    axios.post('http://localhost:3001/persons', newPerson).then(response => {
+      setPersons(persons.concat(response.data))
+    })
 
   }
   const handleNameChange = (event) => {
