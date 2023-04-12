@@ -1,10 +1,19 @@
 import { useEffect, useState } from 'react'
 import uniqid from 'uniqid';
-import axios from 'axios'
 import personService from './services/persons';
-const Persons = ({ filterPersons }) => {
+
+const Person = ({person, handleDeletePerson}) => {
+
   return (
-    filterPersons.map(person => <div key={person.id}>{person.name} {person.number}</div>)
+    <div>
+      {person.name} {person.number} 
+      <button onClick={() => handleDeletePerson(person.id)}>delete</button>
+    </div>
+  )
+}
+const Persons = ({ filterPersons, handleDeletePerson}) => {
+  return (
+    filterPersons.map(person => <Person key={person.id} person={person} handleDeletePerson={handleDeletePerson}/>)
   )
 }
 const PersonForm = ({ handleAddPerson, handleNameChange, handleNumberChange, newName, newNumber }) => {
@@ -45,6 +54,20 @@ const App = () => {
         setPersons(initialPeople)
       })
   }, [])
+
+  const handleDeletePerson = (id) => {
+    const toDelete = window.confirm('Are you sure you want to delete?')
+    if(toDelete){
+      personService
+      .deletePerson(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+        }).catch(() => {
+          alert('Failed to Delete')
+        }) 
+    }
+  }
+
   const handleAddPerson = (event) => {
     event.preventDefault()
     setNewName('')
@@ -82,7 +105,7 @@ const App = () => {
       <PersonForm handleAddPerson={handleAddPerson} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange}
         newName={newName} newNumber={newNumber} />
       <h2>Numbers</h2>
-      <Persons filterPersons={filterPersons} />
+      <Persons filterPersons={filterPersons} handleDeletePerson={handleDeletePerson}/> 
     </div>
   )
 }
