@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import uniqid from 'uniqid';
 import axios from 'axios'
+import personService from './services/persons';
 const Persons = ({ filterPersons }) => {
   return (
     filterPersons.map(person => <div key={person.id}>{person.name} {person.number}</div>)
@@ -38,10 +39,10 @@ const App = () => {
   const [filterWords, setFilterWords] = useState('')
   const filterPersons = persons.filter(person => person.name.includes(filterWords))
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
+    personService
+    .getAll()
+      .then(initialPeople => {
+        setPersons(initialPeople)
       })
   }, [])
   const handleAddPerson = (event) => {
@@ -57,8 +58,8 @@ const App = () => {
       number: newNumber,
       id: uniqid()
     }
-    axios.post('http://localhost:3001/persons', newPerson).then(response => {
-      setPersons(persons.concat(response.data))
+    personService.createPerson(newPerson).then(returnedData => {
+      setPersons(persons.concat(returnedData))
     })
 
   }
