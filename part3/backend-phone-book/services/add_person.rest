@@ -1,0 +1,9 @@
+POST http://localhost:3001/api/persons
+Content-Type: application/json 
+
+{
+    "name": "Anav Mehta",
+    "number": "408-507-5407"
+
+}
+
