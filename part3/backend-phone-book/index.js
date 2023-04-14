@@ -55,11 +55,12 @@ app.delete('/api/persons/:id', (request, response, error) => {
 
 app.post('/api/persons', (request, response) => {
     const body = request.body
-    if (body.name === undefined) {
+    console.log(body.number)
+    if (!body.name) {
         return response.status(400).json({
             error: 'name missing'
         })
-    } else if (body.number === undefined) {
+    } else if (!body.number) {
         return response.status(400).json({
             error: 'number missing'
         })
@@ -78,6 +79,19 @@ app.post('/api/persons', (request, response) => {
             response.json(savedPerson)
         })
     }).catch((error) => next(error))
+
+})
+
+app.put('/api/persons/:id', (request, response) => {
+    const body = request.body
+    const id = request.params.id
+    const person = {
+        name: body.name,
+        number: body.number
+    }
+    Person.findByIdAndUpdate(id, person, {new: true}).then(updatedPerson => {
+        response.json(updatedPerson)
+    }).catch(error => next(error))
 
 })
 
