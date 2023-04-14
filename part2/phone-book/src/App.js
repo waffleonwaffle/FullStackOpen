@@ -89,8 +89,8 @@ const App = () => {
         showNotification(`Updated ${newName}`, 'notification');
       })
       .catch(error => {
-        showNotification(`Information of ${changedPerson.name} has already been removed from the server`, 'error');
-        setPersons(persons.filter(person => person.id !== id));
+        showNotification(`Error Updating (Check input format)`, 'error');
+        // setPersons(persons.filter(person => person.id !== id));
       });
   };
   const handleAddPerson = (event) => {
