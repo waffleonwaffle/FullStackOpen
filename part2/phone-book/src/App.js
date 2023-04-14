@@ -144,7 +144,7 @@ const App = () => {
       <h2>Phonebook</h2>
       <Notification notification={notification} messageType={messageType}/>
       <Filter filterWords={filterWords} handleFilterChange={handleFilterChange} />
-      <h2>add a new</h2>
+      <h2>add a new number</h2>
       <PersonForm handleAddPerson={handleAddPerson} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange}
         newName={newName} newNumber={newNumber} />
       <h2>Numbers</h2>
