@@ -8,7 +8,6 @@ const getAll = () => {
 
 const createPerson = (newPerson) => {
     const request = axios.post(baseUrl, newPerson)
-    console.log(request)
     return request.then(response => response.data)
 }
 
