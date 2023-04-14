@@ -3,6 +3,7 @@ const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
 app.use(express.json())
+app.use(express.static('build'))
 
 let persons = [
     {
@@ -39,7 +40,6 @@ app.get('/', (request, response) => {
 })
 
 app.get('/api/persons', (request, response) => {
-    console.log('hi')
     response.json(persons)
 })
 
@@ -70,6 +70,7 @@ const generateId = () => {
 app.post('/api/persons', (request, response) => {
     const body = request.body
     if (!body.name) {
+        
         return response.status(400).json({
             error: 'name missing'
         })
@@ -92,6 +93,7 @@ app.post('/api/persons', (request, response) => {
 })
 
 const PORT = process.env.PORT || 3001
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })

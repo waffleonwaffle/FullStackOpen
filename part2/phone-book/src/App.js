@@ -114,7 +114,9 @@ const App = () => {
     personService.createPerson(newPerson).then(returnedData => {
       setPersons(persons.concat(returnedData))
       showNotification(`Added ${newName}`, 'notification')
-    })
+    }).catch(error => {
+      showNotification(`Missing Information`, 'error');
+    });
    
   }
   const handleNameChange = (event) => {
