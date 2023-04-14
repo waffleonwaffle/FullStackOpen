@@ -34,7 +34,12 @@ morgan.token('data', function (request, response) {
 })
 app.use(morgan(':method :url :status :response-time ms :data'))
 app.use(cors())
+app.get('/', (request, response) => {
+    response.send('<h1>People Directory<h1>')
+})
+
 app.get('/api/persons', (request, response) => {
+    console.log('hi')
     response.json(persons)
 })
 
