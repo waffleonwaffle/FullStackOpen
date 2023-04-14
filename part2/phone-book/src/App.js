@@ -115,7 +115,7 @@ const App = () => {
       setPersons(persons.concat(returnedData))
       showNotification(`Added ${newName}`, 'notification')
     }).catch(error => {
-      showNotification(`Missing Information`, 'error');
+      showNotification(`Unformated or Missing Information`, 'error');
     });
    
   }

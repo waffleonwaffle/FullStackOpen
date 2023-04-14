@@ -9,13 +9,16 @@ app.use(express.static('build'))
 morgan.token('data', function (request, response) {
     if (request.method === 'POST') {
         return JSON.stringify(request.body)
-    }
+    } 
 })
 
 const errorHandler = (error, request, response, next) => {
     console.log(error)
     if(error.name === 'CastError') {
         return response.status(400).send({ error: 'malformatted id' })
+    } else if(error.name === 'ValidationError') {
+        return response.status(400).send({ error: 'name or number too short' })
+
     }
     next(error)
 }
@@ -44,7 +47,7 @@ app.get('/api/persons/:id', (request, response, next) => {
     }).catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (request, response, error) => {
+app.delete('/api/persons/:id', (request, response) => {
     const id = request.params.id
     Person.findByIdAndDelete(id)
         .then(() => {
@@ -53,18 +56,8 @@ app.delete('/api/persons/:id', (request, response, error) => {
         .catch((error) => next(error))
 })
 
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
     const body = request.body
-    console.log(body.number)
-    if (!body.name) {
-        return response.status(400).json({
-            error: 'name missing'
-        })
-    } else if (!body.number) {
-        return response.status(400).json({
-            error: 'number missing'
-        })
-    }
     Person.findOne({ "name": body.name }).then((person) => {
         if (person) {
             return response.status(400).json({
@@ -77,19 +70,15 @@ app.post('/api/persons', (request, response) => {
         })
         newPerson.save().then(savedPerson => {
             response.json(savedPerson)
-        })
+        }).catch((error) => next(error))
     }).catch((error) => next(error))
 
 })
 
-app.put('/api/persons/:id', (request, response) => {
-    const body = request.body
+app.put('/api/persons/:id', (request, response, next) => {
     const id = request.params.id
-    const person = {
-        name: body.name,
-        number: body.number
-    }
-    Person.findByIdAndUpdate(id, person, {new: true}).then(updatedPerson => {
+    const {name, number} = request.body
+    Person.findByIdAndUpdate(id, {name, number}, {new: true, runValidators: true, context: 'query'}).then(updatedPerson => {
         response.json(updatedPerson)
     }).catch(error => next(error))
 
