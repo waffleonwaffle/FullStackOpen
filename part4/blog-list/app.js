@@ -1,20 +1,27 @@
 const express = require('express')
 const cors = require('cors')
 const app = express()
+const blogRouter = require('./controllers/bloglist')
+const config = require('./utils/config')
+const logger = require('./utils/logger')
+
+const { requestLogger, errorHandler, unknownEndpoint } = require('./utils/middleware')
+
 const mongoose = require('mongoose')
-
 mongoose.set('strictQuery', false)
-
-const mongoUrl = 'mongodb://localhost/bloglist'
-
-mongoose.connect(mongoUrl)
+mongoose.connect(config.MONGODB_URI)
+  .then(() => {
+    logger.info('connected to MongoDB')
+  })
+  .catch((error) => {
+    logger.error('error connecting to MongoDB:', error.message)
+  })
 
 app.use(cors())
 app.use(express.json())
-app.use('/api/blogs', notesRouter)
-const PORT = 3003
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
-})
+app.use(requestLogger)
+app.use('/api/blogs', blogRouter)
+app.use(errorHandler)
+app.use(unknownEndpoint)
 
 module.exports = app

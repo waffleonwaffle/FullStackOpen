@@ -3,9 +3,9 @@ Content-Type: application/json
 
 {
     "title": "Full Stack Open",
-    "author": "Anav Mehta",
+    "author": "Popcorn Patty",
     "url": "randomurl.com",
-    "likes": 0
+    "likes": 15
 
 }
 
