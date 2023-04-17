@@ -33,11 +33,8 @@ const mostBlogs = (blogs) => {
     for(let i = 0; i < blogs.length; i++) {
         if (authors[blogs[i].author] === undefined) {
             authors[blogs[i].author] = 1
-            // max_blogs = authors[blogs[i].author]
-            // max_author = blogs
         } else {
             authors[blogs[i].author] += 1
-            // val = authors[blogs[i].author]
         }
         val = authors[blogs[i].author]
         if (val > max_blogs) {
@@ -52,11 +49,40 @@ const mostBlogs = (blogs) => {
     
 }
 
+const mostLikes = (blogs) => {
+    let authors = {}
+    let obj = {"author": null, likes: -1}
+    let val = -1
+    let max_likes = -1 
+    let max_author = null
+    for(let i = 0; i < blogs.length; i++) {
+        if (authors[blogs[i].author] === undefined) {
+            authors[blogs[i].author] = blogs[i].likes
+            // max_blogs = authors[blogs[i].author]
+            // max_author = blogs
+        } else {
+            authors[blogs[i].author] += blogs[i].likes
+            // val = authors[blogs[i].author]
+        }
+        val = authors[blogs[i].author]
+        if (val > max_likes) {
+            max_likes = val
+            max_author = blogs[i].author
+        }
+    }
+
+    obj.author = max_author
+    obj.likes = max_likes
+    return obj
+    
+}
+
 
 
 module.exports = {
     dummy, 
     totalLikes, 
     favoriteBlog, 
-    mostBlogs
+    mostBlogs, 
+    mostLikes
 }
