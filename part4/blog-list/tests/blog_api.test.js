@@ -4,7 +4,6 @@ const app = require('../app')
 const api = supertest(app)
 const helper = require('./test_helper')
 const Blog = require('../models/blogschema')
-require('express-async-errors') 
 // npm test -- tests/blog_api.test.js
 
 beforeEach(async () => {
@@ -53,6 +52,20 @@ test('likes default to 0 when not given', async () => {
     blogsAtEnd.forEach(blog => {
         expect(blog.likes).toBeDefined()
     })
+})
+
+test('400 code request when no url or author is provided', async () => {
+    const noUrlBlog = {
+        title: "TDD harms architecture",
+        author: "Robert C. Martin",
+    }
+
+    const noAuthorBlog = {
+        title: "TDD harms architecture",
+        url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
+    }
+    await api.post('/api/blogs').send(noUrlBlog).expect(400)
+    await api.post('/api/blogs').send(noAuthorBlog).expect(400)
 })
 afterAll(async () => {
     await mongoose.connection.close()

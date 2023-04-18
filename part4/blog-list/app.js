@@ -21,7 +21,8 @@ app.use(cors())
 app.use(express.json())
 app.use(requestLogger)
 app.use('/api/blogs', blogRouter)
-app.use(errorHandler)
+
 app.use(unknownEndpoint)
+app.use(errorHandler)
 
 module.exports = app
