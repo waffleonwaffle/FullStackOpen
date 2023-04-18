@@ -1,12 +1,12 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkxMQU1BIiwiaWQiOiI2NDNlOTJkZWM3YjcyMDIwMGEyYzY1ZGIiLCJpYXQiOjE2ODE4MjU1NjUsImV4cCI6MTY4MTgyOTE2NX0.qkX_hjsiBC1fybGGjA0nna4jTMDXT_hxpVJ1n3WF6Is
 
 {
-    "title": "pancakes",
+    "title": "tacos",
     "author": "Amal Mehta",
     "url": "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
-    "likes": 0, 
-    "userId": "643e92dec7b720200a2c65db"
+    "likes": 0 
 }
 
 ###
