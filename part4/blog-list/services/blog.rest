@@ -2,11 +2,11 @@ POST http://localhost:3003/api/blogs
 Content-Type: application/json 
 
 {
-    "title": "Squash",
+    "title": "pancakes",
     "author": "Amal Mehta",
     "url": "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
     "likes": 0, 
-    "userId": "643e8eec992490fcf5333d3d"
+    "userId": "643e92dec7b720200a2c65db"
 }
 
 ###
