@@ -41,6 +41,19 @@ test('can add a blog to the db', async () => {
     expect(contents).toContain("TDD harms architecture")
 })
 
+
+test('likes default to 0 when not given', async () => {
+    const newBlog = {
+        title: "TDD harms architecture",
+        author: "Robert C. Martin",
+        url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
+      }
+    await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/)
+    const blogsAtEnd = await helper.blogsInDB()
+    blogsAtEnd.forEach(blog => {
+        expect(blog.likes).toBeDefined()
+    })
+})
 afterAll(async () => {
     await mongoose.connection.close()
 })

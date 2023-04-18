@@ -19,12 +19,6 @@ const initialBlogs = [
 
 
 const blogsInDB = async () => {
-    // Blog.set('toJSON', {
-    //     transform: (document, returnedObject) => {
-    //         returnedObject.id = returnedObject._id
-    //         delete returnedObject._id
-    //     }
-    // })
     const blogs = await Blog.find({})
 
     return blogs.map(blog => blog.toJSON())
