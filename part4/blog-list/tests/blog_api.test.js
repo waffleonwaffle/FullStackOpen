@@ -79,9 +79,20 @@ describe('deletion of a new blog', () => {
         expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1)
     })
 })
-
+describe('updating a blog with a new number of likes', () => {
+    test('succeeds with a status code 200 if the id is valid', async () => {
+        const blogsAtStart = await helper.blogsInDB()
+        const blog = blogsAtStart[0]
+        const newBlog = {
+            ...blog, 
+            likes: blog.likes + 10
+        }
+        const updatedBlog = await api.put(`/api/blogs/${blog.id}`).send(newBlog).expect(200)
+        expect(updatedBlog.body.likes).toEqual(newBlog.likes)
+    })
+})
 afterAll(async () => {
     await mongoose.connection.close()
 })
 
-// npm test -- -t "deletion of a new blog"        
+// npm test -- -t "updating a blog with a new number of likes"        
