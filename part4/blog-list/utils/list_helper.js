@@ -9,19 +9,26 @@ const totalLikes = (blogs) => {
 const favoriteBlog = (blogs) => {
     let blog = null
     let maximum = -1
+    let obj = {"title": "", "author": "", likes: -1}
     for(let i = 0; i < blogs.length; i++){
         if(blogs[i].likes > maximum) {
             maximum = blogs[i].likes
             blog = blogs[i]
         }
     }
-    const newBlog = JSON.stringify(blog, (key, value) => {
-        if(key === '_id' || key === '__v' || key === 'url') {
-            return undefined
-        }
-        return value
-    })
-    return JSON.parse(newBlog)
+    // const newBlog = JSON.stringify(blog, (key, value) => {
+    //     if(key === '_id' || key === '__v' || key === 'url') {
+    //         return undefined
+    //     }
+    //     return value
+    // })
+    if(!blog) {
+        return null
+    }
+    obj.title = blog.title
+    obj.author = blog.author
+    obj.likes = blog.likes
+    return obj
 }
 
 const mostBlogs = (blogs) => {
