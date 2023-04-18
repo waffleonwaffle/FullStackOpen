@@ -8,65 +8,80 @@ const Blog = require('../models/blogschema')
 
 beforeEach(async () => {
     await Blog.deleteMany({})
-    for(let blog of helper.initialBlogs) {
-        let blogObject = new Blog(blog)
-        await blogObject.save()
-    }
+    await Blog.insertMany(helper.initialBlogs)
+
 })
 
-test('gets all the blogs', async () => {
-    const result = await api.get('/api/blogs')
-    expect(result.body).toHaveLength(helper.initialBlogs.length)
-})
+describe('when there is initially some blogs saved', () => {
+    test('we can succesfully get all blogs', async () => {
+        const result = await api.get('/api/blogs')
+        expect(result.body).toHaveLength(helper.initialBlogs.length)
+    })
 
-test('blogs contain id attribute', async () => {
-    const blogs = await helper.blogsInDB()
-    const blogToCheck = blogs[0]
-    expect(blogToCheck.id).toBeDefined()
-})
-
-
-test('can add a blog to the db', async () => {
-    const newBlog = {
-        title: "TDD harms architecture",
-        author: "Robert C. Martin",
-        url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
-        likes: 0,
-      }
-    await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/)
-    const blogsAtEnd = await helper.blogsInDB()
-    const contents = blogsAtEnd.map(blog => blog.title)
-    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
-    expect(contents).toContain("TDD harms architecture")
-})
-
-
-test('likes default to 0 when not given', async () => {
-    const newBlog = {
-        title: "TDD harms architecture",
-        author: "Robert C. Martin",
-        url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
-      }
-    await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/)
-    const blogsAtEnd = await helper.blogsInDB()
-    blogsAtEnd.forEach(blog => {
-        expect(blog.likes).toBeDefined()
+    test('all blogs contain id attribute', async () => {
+        const blogs = await helper.blogsInDB()
+        const blogToCheck = blogs[0]
+        expect(blogToCheck.id).toBeDefined()
     })
 })
 
-test('400 code request when no url or author is provided', async () => {
-    const noUrlBlog = {
-        title: "TDD harms architecture",
-        author: "Robert C. Martin",
-    }
+describe('addition of a new blog', () => {
+    test('succeeds with valid data', async () => {
+        const newBlog = {
+            title: "TDD harms architecture",
+            author: "Robert C. Martin",
+            url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
+            likes: 0,
+        }
+        await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/)
+        const blogsAtEnd = await helper.blogsInDB()
+        const contents = blogsAtEnd.map(blog => blog.title)
+        expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+        expect(contents).toContain("TDD harms architecture")
+    })
 
-    const noAuthorBlog = {
-        title: "TDD harms architecture",
-        url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
-    }
-    await api.post('/api/blogs').send(noUrlBlog).expect(400)
-    await api.post('/api/blogs').send(noAuthorBlog).expect(400)
+
+    test('defaults likes to 0', async () => {
+        const newBlog = {
+            title: "TDD harms architecture",
+            author: "Robert C. Martin",
+            url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
+        }
+        await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/)
+        const blogsAtEnd = await helper.blogsInDB()
+        blogsAtEnd.forEach(blog => {
+            expect(blog.likes).toBeDefined()
+        })
+    })
+
+    test('fails with status code 400 if author or url is not provided', async () => {
+        const noUrlBlog = {
+            title: "TDD harms architecture",
+            author: "Robert C. Martin",
+        }
+    
+        const noAuthorBlog = {
+            title: "TDD harms architecture",
+            url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
+        }
+        await api.post('/api/blogs').send(noUrlBlog).expect(400)
+        await api.post('/api/blogs').send(noAuthorBlog).expect(400)
+    })
 })
+
+
+describe('deletion of a new blog', () => {
+    test('succeeds with status code 204 if the id is valid', async () => {
+        const blogsAtStart = await helper.blogsInDB()
+        const blog = blogsAtStart[0]
+        await api.delete(`/api/blogs/${blog.id}`).expect(204)
+        const blogsAtEnd = await helper.blogsInDB()
+        expect(blogsAtEnd).toHaveLength(blogsAtStart.length - 1)
+    })
+})
+
 afterAll(async () => {
     await mongoose.connection.close()
 })
+
+// npm test -- -t "deletion of a new blog"        

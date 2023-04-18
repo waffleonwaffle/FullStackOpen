@@ -3,23 +3,23 @@ const mongoose = require('mongoose')
 const blogSchema = new mongoose.Schema({
   title: String,
   author: {
-    type: String, 
+    type: String,
     required: true
   },
   url: {
-    type: String, 
+    type: String,
     required: true
   },
   likes: {
-    type: Number, 
+    type: Number,
     default: 0
   }
 })
 
 blogSchema.set('toJSON', {
   transform: (document, returnedObject) => {
-      returnedObject.id = returnedObject._id
-      delete returnedObject._id
+    returnedObject.id = returnedObject._id
+    delete returnedObject._id
   }
 })
 
