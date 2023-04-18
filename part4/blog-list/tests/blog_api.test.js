@@ -1,6 +1,5 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
-// const 
 const app = require('../app')
 const api = supertest(app)
 const helper = require('./test_helper')
@@ -28,17 +27,19 @@ test('blogs contain id attribute', async () => {
 })
 
 
-// test('can add a blog to the db', async () => {
-//     const blogsAtStart = await helper.blogsInDB()
-//     const newBlog = {
-//         title: "TDD harms architecture",
-//         author: "Robert C. Martin",
-//         url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
-//         likes: 0,
-//       }
-//     await api.post('/api/blogs')
-//     expect(blogToCheck.id).toBeDefined()
-// })
+test('can add a blog to the db', async () => {
+    const newBlog = {
+        title: "TDD harms architecture",
+        author: "Robert C. Martin",
+        url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
+        likes: 0,
+      }
+    await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/)
+    const blogsAtEnd = await helper.blogsInDB()
+    const contents = blogsAtEnd.map(blog => blog.title)
+    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1)
+    expect(contents).toContain("TDD harms architecture")
+})
 
 afterAll(async () => {
     await mongoose.connection.close()
