@@ -1,12 +1,14 @@
 
 const usersRouter = require('express').Router()
 const bcrypt = require('bcrypt')
-
 const User = require('../models/userSchema')
+require('express-async-errors')
 
 usersRouter.post('/', async (request, response) => {
     const { username, name, password } = request.body
-
+    if(password.length < 3) {
+        return response.status(401).json({error: 'password too short'})
+    }
     const saltRounds = 10
     const passwordHash = await bcrypt.hash(password, saltRounds)
     const newUser = new User({
@@ -15,7 +17,7 @@ usersRouter.post('/', async (request, response) => {
         passwordHash
     })
 
-    const savedUser = newUser.save()
+    const savedUser = await newUser.save()
 
     response.status(201).json(savedUser)
 })
