@@ -95,4 +95,3 @@ afterAll(async () => {
     await mongoose.connection.close()
 })
 
-// npm test -- -t "updating a blog with a new number of likes"        
