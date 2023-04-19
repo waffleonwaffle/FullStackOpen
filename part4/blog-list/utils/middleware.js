@@ -1,5 +1,7 @@
-const { JsonWebTokenError, TokenExpiredError } = require('jsonwebtoken')
 const logger = require('./logger')
+const User = require('../models/userSchema')
+const jwt = require('jsonwebtoken')
+
 const requestLogger = (request, response, next) => {
     logger.info('Method:', request.method)
     logger.info('Path:  ', request.path)
@@ -31,6 +33,16 @@ const tokenExtractor = (request, response, next) => {
     next()
 }
 
+const userExtractor = async (request, response, next) => {
+    const tokenId = request.token
+    if (tokenId) {
+        const decodedToken = jwt.verify(tokenId, process.env.SECRET)
+        request.user = await User.findById(decodedToken.id)
+        // console.log(request.user)
+    }
+    next()
+}
+
 const unknownEndpoint = (request, response) => {
     response.status(404).send({ error: 'unknown endpoint' })
 }
@@ -38,6 +50,7 @@ const unknownEndpoint = (request, response) => {
 module.exports = {
     requestLogger,
     errorHandler,
-    unknownEndpoint, 
-    tokenExtractor
+    unknownEndpoint,
+    tokenExtractor,
+    userExtractor
 }
