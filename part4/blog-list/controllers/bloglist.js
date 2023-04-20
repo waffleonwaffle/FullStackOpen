@@ -1,5 +1,5 @@
 const blogRouter = require('express').Router()
-const Blog = require('../models/blogschema')
+const Blog = require('../models/blogSchema')
 require('express-async-errors')
 
 blogRouter.get('/', async (request, response) => {
@@ -10,6 +10,10 @@ blogRouter.get('/', async (request, response) => {
 blogRouter.post('/', async (request, response) => {
   const body = request.body
   const user = request.user
+  const token = request.token
+  if(!token) {
+    return response.status(401).json({error: error.name})
+  }
   const blog = new Blog({
     title: body.title,
     author: body.author,

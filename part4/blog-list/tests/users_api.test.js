@@ -2,24 +2,32 @@ const mongoose = require('mongoose')
 
 const supertest = require('supertest')
 const User = require('../models/userSchema')
+const Blog = require('../models/blogSchema')
 const app = require('../app')
 const api = supertest(app)
 const bcrypt = require('bcrypt')
 const helper = require('./test_helper')
+const jwt = require('jsonwebtoken');
+
+// npm test -- users_api.test.js
+// npm test -- -t
+//npm test -- --runInBand users_api.test.js blog_api.test.js
 
 describe('when a user gets created with ', () => {
     beforeEach(async () => {
+        // await Blog.deleteMany({})
         await User.deleteMany({})
         const passwordHash = await bcrypt.hash('password', 10)
-        const user = new User ({username: 'Anu', name: 'Bannu'})
+        const user = new User ({username: 'Anu', name: 'Bannu', passwordHash: passwordHash})
         await user.save()
     })
 
     test('valid data, it passes', async () => {
+
         const usersAtStart = await helper.usersInDB()
         const newUser = {
             username: 'Good Username', 
-            name : 'random name',
+            name: 'random name',
             password: 'good password'
         }
         
@@ -29,11 +37,12 @@ describe('when a user gets created with ', () => {
 
     })
 
-    test('an invalid username (less than 3 characters), it fails', async () => {
+    test('an invalid username fails', async () => {
         const usersAtStart = await helper.usersInDB()
+
         const newUser = {
             username: 'me', 
-            name : 'random',
+            name: 'random',
             password: 'chinter'
         }
         
@@ -43,11 +52,11 @@ describe('when a user gets created with ', () => {
 
     })
 
-    test('an invalid password (less than 3 characters), it fails', async () => {
+    test('an invalid password fails', async () => {
         const usersAtStart = await helper.usersInDB()
         const newUser = {
             username: 'me', 
-            name : 'random',
+            name: 'random',
             password: 'wh'
         }
         
@@ -57,11 +66,11 @@ describe('when a user gets created with ', () => {
 
     })
 
-    test('an duplicate username, it fails', async () => {
+    test('a duplicate username, it fails', async () => {
         const usersAtStart = await helper.usersInDB()
         const newUser = {
             username: 'Anu', 
-            name : 'random',
+            name: 'random',
             password: 'good password'
         }
         
@@ -75,5 +84,7 @@ describe('when a user gets created with ', () => {
 // npm test -- -t 'when a user gets created with'
 
 afterAll(async () => {
+    User.deleteMany({})
+    Blog.deleteMany({})
     await mongoose.connection.close()
 })

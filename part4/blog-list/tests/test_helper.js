@@ -1,4 +1,4 @@
-const Blog = require('../models/blogschema')
+const Blog = require('../models/blogSchema')
 const User = require('../models/userSchema')
 
 const initialBlogs = [
@@ -25,7 +25,8 @@ const blogsInDB = async () => {
 
 const usersInDB = async () => {
     const users = await User.find({})
-    return users.map(user => user.toJSON())
+    // console.log(users)
+    return users.map((user) => user.toJSON())
 }
 
 
