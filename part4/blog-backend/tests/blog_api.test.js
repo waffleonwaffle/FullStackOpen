@@ -36,8 +36,8 @@ describe('addition of a new blog', () => {
     beforeEach(async () => {
         await User.deleteMany({});
         const passwordHash = await bcrypt.hash("12345", 10);
-        const user = await new User({ username: "name", passwordHash }).save();
-
+        const user = await new User({ username: "name", passwordHash: passwordHash }).save();
+        
         const userForToken = { username: "name", id: user.id };
         return (token = jwt.sign(userForToken, config.SECRET));
     })
@@ -140,6 +140,7 @@ describe('updating a blog with a new number of likes', () => {
     })
 })
 afterAll(async () => {
+
     await mongoose.connection.close()
 })
 

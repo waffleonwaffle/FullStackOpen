@@ -11,8 +11,8 @@ const jwt = require('jsonwebtoken');
 
 // npm test -- users_api.test.js
 // npm test -- -t
-//npm test -- --runInBand users_api.test.js blog_api.test.js
-
+//npm test --runInBand users_api.test.js blog_api.test.js
+//npm test --runInBand blog_api.test.js users_api.test.js 
 describe('when a user gets created with ', () => {
     beforeEach(async () => {
         // await Blog.deleteMany({})
@@ -84,7 +84,5 @@ describe('when a user gets created with ', () => {
 // npm test -- -t 'when a user gets created with'
 
 afterAll(async () => {
-    User.deleteMany({})
-    Blog.deleteMany({})
     await mongoose.connection.close()
 })
