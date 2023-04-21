@@ -2,10 +2,14 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Notification from './components/Notification'
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUserName] = useState('')
   const [password, setPassword] = useState('')
+  const [errorMessage, setErrorMessage] = useState(null)
+  const [messageType, setMessageType] = useState(null)
   const [user, setUser] = useState(null)
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
@@ -34,8 +38,8 @@ const App = () => {
       setUser(user)
       setUserName('')
       setPassword('')
-    } catch (error) {
-      console.log(error)
+    } catch {
+      showNotification('wrong username or password', 'error')
     }
   }
 
@@ -44,21 +48,30 @@ const App = () => {
     setUser(null)
   }
 
+
+  const showNotification = (message, type) => {
+    setErrorMessage(message)
+    setMessageType(type)
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 5000)
+  }
   const handleAddBlog = async (event) => {
     event.preventDefault()
     const newBlog = {
-      title: title, 
+      title: title,
       author: author,
       url: url
     }
     try {
       const blog = await blogService.createBlog(newBlog)
       setBlogs(blogs.concat(blog))
+      showNotification(`a new blog ${blog.title} by ${blog.author}`, 'successful')
       setTitle('')
       setAuthor('')
       setUrl('')
-    } catch (error) {
-      console.log(error)
+    } catch {
+      showNotification('Missing information', 'error')
     }
   }
 
@@ -67,13 +80,13 @@ const App = () => {
       <h2>create new</h2>
       <section>
         <div>
-          title: <input value={title} onChange={({target}) => setTitle(target.value)}/>
+          title: <input value={title} onChange={({ target }) => setTitle(target.value)} />
         </div>
         <div>
-          author: <input value={author} onChange={({target}) => setAuthor(target.value)}/>
+          author: <input value={author} onChange={({ target }) => setAuthor(target.value)} />
         </div>
         <div>
-          url: <input value={url} onChange={({target}) => setUrl(target.value)}/>
+          url: <input value={url} onChange={({ target }) => setUrl(target.value)} />
         </div>
       </section>
       <button type='submit'>create</button>
@@ -82,6 +95,7 @@ const App = () => {
   const loginForm = () => {
     return <form onSubmit={handleLogin}>
       <h2>log in to application</h2>
+      <Notification type={messageType} message={errorMessage} />
       <div>
         username
         <input value={username} type='text' name='username' onChange={({ target }) => setUserName(target.value)}></input>
@@ -97,6 +111,7 @@ const App = () => {
   const blogList = () => {
     return <div>
       <h2>blogs</h2>
+      <Notification type={messageType} message={errorMessage} />
       <p>
         {user.name} logged in
         <button onClick={() => handleLogout()}>logout</button>
