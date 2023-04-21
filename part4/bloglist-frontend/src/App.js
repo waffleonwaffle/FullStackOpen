@@ -7,7 +7,9 @@ const App = () => {
   const [username, setUserName] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-
+  const [title, setTitle] = useState('')
+  const [author, setAuthor] = useState('')
+  const [url, setUrl] = useState('')
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs(blogs)
@@ -19,6 +21,7 @@ const App = () => {
     if (loggedInUser) {
       const user = JSON.parse(loggedInUser)
       setUser(user)
+      blogService.setToken(user.tokenForUser)
     }
   }, [])
 
@@ -27,11 +30,12 @@ const App = () => {
     try {
       const user = await loginService.login({ username, password })
       window.localStorage.setItem('loggedInUser', JSON.stringify(user))
+      blogService.setToken(user.tokenForUser)
       setUser(user)
       setUserName('')
       setPassword('')
-    } catch {
-      console.log('Invalid Credentials')
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -40,6 +44,41 @@ const App = () => {
     setUser(null)
   }
 
+  const handleAddBlog = async (event) => {
+    event.preventDefault()
+    const newBlog = {
+      title: title, 
+      author: author,
+      url: url
+    }
+    try {
+      const blog = await blogService.createBlog(newBlog)
+      setBlogs(blogs.concat(blog))
+      setTitle('')
+      setAuthor('')
+      setUrl('')
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const addBlogForm = () => {
+    return <form onSubmit={handleAddBlog}>
+      <h2>create new</h2>
+      <section>
+        <div>
+          title: <input value={title} onChange={({target}) => setTitle(target.value)}/>
+        </div>
+        <div>
+          author: <input value={author} onChange={({target}) => setAuthor(target.value)}/>
+        </div>
+        <div>
+          url: <input value={url} onChange={({target}) => setUrl(target.value)}/>
+        </div>
+      </section>
+      <button type='submit'>create</button>
+    </form>
+  }
   const loginForm = () => {
     return <form onSubmit={handleLogin}>
       <h2>log in to application</h2>
@@ -67,6 +106,7 @@ const App = () => {
           <Blog key={blog.id} blog={blog} />
         )
       }
+      {addBlogForm()}
     </div>
 
   }

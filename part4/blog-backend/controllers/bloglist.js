@@ -11,7 +11,7 @@ blogRouter.post('/', async (request, response) => {
   const {title, author, url, likes} = request.body
   const user = request.user
   if(!user) {
-    return response.status(401).json({error: error.name})
+    return response.status(401).json({error: 'No User Found'})
   }
   const blog = new Blog({
     title, author, url,
