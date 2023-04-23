@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef} from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
@@ -12,8 +12,8 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
   const [messageType, setMessageType] = useState(null)
   const [user, setUser] = useState(null)
+  const blogFormRef = useRef()
   useEffect(() => {
-    // console.log('rendering')
     blogService.getAll().then(blogs =>
       setBlogs(blogs)
     )
@@ -48,8 +48,6 @@ const App = () => {
     window.localStorage.clear()
     setUser(null)
   }
-
-
   const showNotification = (message, type) => {
     setErrorMessage(message)
     setMessageType(type)
@@ -57,16 +55,37 @@ const App = () => {
       setErrorMessage(null)
     }, 5000)
   }
+
+  
   const handleAddBlog = async (newBlog) => {
     try {
       const blog = await blogService.createBlog(newBlog)
-      // console.log(blog.id)
+      blogFormRef.current.toggleVisibility()
       setBlogs(blogs.concat(blog))
       showNotification(`a new blog ${blog.title} by ${blog.author}`, 'successful')
     } catch {
       showNotification('Missing information', 'error')
     }
   }
+
+  const handleUpdateLikes = async (id) => {
+    const blog = blogs.find(blog => blog.id === id)
+    const updatedBlog = {
+      user: blog.user.id, 
+      likes: blog.likes + 1, 
+      author: blog.author, 
+      title: blog.title, 
+      url: blog.url,
+    }
+    try {
+      const blogResponse = await blogService.updateLikes(id, updatedBlog)
+      setBlogs(blogs.map(blog => blog.id !== id ? blog : blogResponse))
+      showNotification(`${blog.title} by ${blog.author} was liked`, 'successful')
+    } catch {
+      showNotification('Missing information', 'error')
+    }
+  }
+
 
   const loginForm = () => {
     return <form onSubmit={handleLogin}>
@@ -84,7 +103,9 @@ const App = () => {
     </form>
   }
 
+
   const blogList = () => {
+    blogs.sort((a, b) => b.likes - a.likes)
     return <div>
       <h2>blogs</h2>
       <Notification type={messageType} message={errorMessage} />
@@ -94,10 +115,10 @@ const App = () => {
       </p>
       {
         blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} user={user}/>
+          <Blog key={blog.id} blog={blog} handleUpdateLikes={handleUpdateLikes}/>
         )
       }
-      <Togglable buttonLabel='new blog'>
+      <Togglable buttonLabel='new blog' ref={blogFormRef}>
         <BlogForm handleSubmitBlog={handleAddBlog}/>
       </Togglable>
     </div>

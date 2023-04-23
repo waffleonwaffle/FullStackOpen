@@ -1,5 +1,5 @@
 import { useState } from "react"
-const Blog = ({ blog }) => {
+const Blog = ({ blog, handleUpdateLikes }) => {
   const [view, setView] = useState(false)
   const showWhenVisible = {display: view ? '' : 'none'}
   const hideWhenVisible = {display: view ? 'none' : ''}
@@ -11,6 +11,7 @@ const Blog = ({ blog }) => {
     borderWidth: 1,
     marginBottom: 5
   } 
+
   return (
     <section style={blogStyle}>
       {blog.title} {blog.author}
@@ -21,7 +22,7 @@ const Blog = ({ blog }) => {
         </div>
         <div>
           likes {blog.likes} 
-          <button>like</button>
+          <button onClick={() => handleUpdateLikes(blog.id)}>like</button>
         </div>
         <div>
           {blog.user.name}
