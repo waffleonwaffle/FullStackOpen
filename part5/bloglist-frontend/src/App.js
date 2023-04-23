@@ -13,6 +13,7 @@ const App = () => {
   const [messageType, setMessageType] = useState(null)
   const [user, setUser] = useState(null)
   useEffect(() => {
+    // console.log('rendering')
     blogService.getAll().then(blogs =>
       setBlogs(blogs)
     )
@@ -26,12 +27,14 @@ const App = () => {
       blogService.setToken(user.tokenForUser)
     }
   }, [])
+  
 
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
       const user = await loginService.login({ username, password })
       window.localStorage.setItem('loggedInUser', JSON.stringify(user))
+      
       blogService.setToken(user.tokenForUser)
       setUser(user)
       setUserName('')
@@ -57,6 +60,7 @@ const App = () => {
   const handleAddBlog = async (newBlog) => {
     try {
       const blog = await blogService.createBlog(newBlog)
+      // console.log(blog.id)
       setBlogs(blogs.concat(blog))
       showNotification(`a new blog ${blog.title} by ${blog.author}`, 'successful')
     } catch {
@@ -90,7 +94,7 @@ const App = () => {
       </p>
       {
         blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
+          <Blog key={blog.id} blog={blog} user={user}/>
         )
       }
       <Togglable buttonLabel='new blog'>

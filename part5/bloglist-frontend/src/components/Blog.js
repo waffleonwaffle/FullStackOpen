@@ -10,21 +10,21 @@ const Blog = ({ blog }) => {
     border: 'solid',
     borderWidth: 1,
     marginBottom: 5
-  }
+  } 
   return (
     <section style={blogStyle}>
-      {blog.title}
+      {blog.title} {blog.author}
       <button style={hideWhenVisible} onClick={() => setView(true)}>view</button>
       <div style={showWhenVisible}>
         <div>
-          {blog.url}
+          url {blog.url}
         </div>
         <div>
           likes {blog.likes} 
           <button>like</button>
         </div>
         <div>
-          {blog.author}
+          {blog.user.name}
         </div>
         <button style={showWhenVisible} onClick={() => setView(false)}>hide</button>
       </div>
