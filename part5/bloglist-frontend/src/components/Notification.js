@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types'
 const Notification = ({type, message }) => {
     if (message === null) {
         return null
@@ -9,6 +10,11 @@ const Notification = ({type, message }) => {
         </div>
     )
 }
+Notification.propTypes = {
+    type: PropTypes.string.isRequired,
+    message: PropTypes.string.isRequired
+}
+
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default Notification

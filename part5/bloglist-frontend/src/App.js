@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef} from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
 import Togglable from './components/Togglable'
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUserName] = useState('')
@@ -27,14 +28,14 @@ const App = () => {
       blogService.setToken(user.tokenForUser)
     }
   }, [])
-  
+
 
   const handleLogin = async (event) => {
     event.preventDefault()
     try {
       const user = await loginService.login({ username, password })
       window.localStorage.setItem('loggedInUser', JSON.stringify(user))
-      
+
       blogService.setToken(user.tokenForUser)
       setUser(user)
       setUserName('')
@@ -56,7 +57,7 @@ const App = () => {
     }, 5000)
   }
 
-  
+
   const handleAddBlog = async (newBlog) => {
     try {
       const blog = await blogService.createBlog(newBlog)
@@ -64,17 +65,31 @@ const App = () => {
       setBlogs(blogs.concat(blog))
       showNotification(`a new blog ${blog.title} by ${blog.author}`, 'successful')
     } catch {
-      showNotification('Missing information', 'error')
+      showNotification('Missing input information', 'error')
+    }
+  }
+
+  const handleDeleteBlog = async (id) => {
+    const blogToDelete = blogs.find(blog => blog.id === id)
+    const confirmDelete = window.confirm(`Remove ${blogToDelete.title} by ${blogToDelete.author}`)
+    if (confirmDelete) {
+      try {
+        await blogService.deleteBlog(id)
+        setBlogs(blogs.filter(blog => blog.id !== id))
+        showNotification(`deleted ${blogToDelete.title} by ${blogToDelete.author} successfully`, 'successful')
+      } catch {
+        showNotification('can only delete your own blogs', 'error')
+      }
     }
   }
 
   const handleUpdateLikes = async (id) => {
     const blog = blogs.find(blog => blog.id === id)
     const updatedBlog = {
-      user: blog.user.id, 
-      likes: blog.likes + 1, 
-      author: blog.author, 
-      title: blog.title, 
+      user: blog.user.id,
+      likes: blog.likes + 1,
+      author: blog.author,
+      title: blog.title,
       url: blog.url,
     }
     try {
@@ -82,7 +97,7 @@ const App = () => {
       setBlogs(blogs.map(blog => blog.id !== id ? blog : blogResponse))
       showNotification(`${blog.title} by ${blog.author} was liked`, 'successful')
     } catch {
-      showNotification('Missing information', 'error')
+      showNotification('Error updating likes', 'error')
     }
   }
 
@@ -115,11 +130,11 @@ const App = () => {
       </p>
       {
         blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} handleUpdateLikes={handleUpdateLikes}/>
+          <Blog key={blog.id} blog={blog} handleUpdateLikes={handleUpdateLikes} handleDeleteBlog={handleDeleteBlog} user={user}/>
         )
       }
       <Togglable buttonLabel='new blog' ref={blogFormRef}>
-        <BlogForm handleSubmitBlog={handleAddBlog}/>
+        <BlogForm handleSubmitBlog={handleAddBlog} />
       </Togglable>
     </div>
 
