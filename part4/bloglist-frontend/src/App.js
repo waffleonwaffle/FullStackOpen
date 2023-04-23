@@ -3,7 +3,8 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
-
+import BlogForm from './components/BlogForm'
+import Togglable from './components/Togglable'
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUserName] = useState('')
@@ -56,42 +57,16 @@ const App = () => {
       setErrorMessage(null)
     }, 5000)
   }
-  const handleAddBlog = async (event) => {
-    event.preventDefault()
-    const newBlog = {
-      title: title,
-      author: author,
-      url: url
-    }
+  const handleAddBlog = async (newBlog) => {
     try {
       const blog = await blogService.createBlog(newBlog)
       setBlogs(blogs.concat(blog))
       showNotification(`a new blog ${blog.title} by ${blog.author}`, 'successful')
-      setTitle('')
-      setAuthor('')
-      setUrl('')
     } catch {
       showNotification('Missing information', 'error')
     }
   }
 
-  const addBlogForm = () => {
-    return <form onSubmit={handleAddBlog}>
-      <h2>create new</h2>
-      <section>
-        <div>
-          title: <input value={title} onChange={({ target }) => setTitle(target.value)} />
-        </div>
-        <div>
-          author: <input value={author} onChange={({ target }) => setAuthor(target.value)} />
-        </div>
-        <div>
-          url: <input value={url} onChange={({ target }) => setUrl(target.value)} />
-        </div>
-      </section>
-      <button type='submit'>create</button>
-    </form>
-  }
   const loginForm = () => {
     return <form onSubmit={handleLogin}>
       <h2>log in to application</h2>
@@ -121,13 +96,14 @@ const App = () => {
           <Blog key={blog.id} blog={blog} />
         )
       }
-      {addBlogForm()}
+      <Togglable buttonLabel='new blog'>
+        <BlogForm handleSubmitBlog={handleAddBlog}/>
+      </Togglable>
     </div>
 
   }
   return (
     <div>
-
       {!user && loginForm()}
       {user && blogList()}
     </div>
